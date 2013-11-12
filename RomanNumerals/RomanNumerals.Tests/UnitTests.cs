@@ -137,6 +137,15 @@ namespace RomanNumerals.Tests
         }
 
         [Test]
+        public void Correct_value_for_15()
+        {
+            var converter = new Converter();
+            var a = converter.ToRoman(15);
+
+            Assert.AreEqual("XV", a);
+        }
+
+        [Test]
         public void Correct_value_for_19()
         {
             var converter = new Converter();

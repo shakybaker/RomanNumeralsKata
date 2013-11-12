@@ -8,12 +8,12 @@ namespace RomanNumerals.Models
 {
     public class Converter
     {
-        private List<RomanNumeral> nums = new List<RomanNumeral>();
-        private List<RomanNumeral> numsDesc = new List<RomanNumeral>();
+        private List<RomanNumeral> numMaps = new List<RomanNumeral>();
+        private List<RomanNumeral> numMapsDesc = new List<RomanNumeral>();
 
         public Converter()
         {
-            nums = new List<RomanNumeral>
+            numMaps = new List<RomanNumeral>
             {
                 new RomanNumeral { Number = 1, Roman = "I", Mid = "V", Increment = "I" },
                 new RomanNumeral { Number = 5, Roman = "V", Mid = "V", Increment = "I" },
@@ -24,7 +24,7 @@ namespace RomanNumerals.Models
                 new RomanNumeral { Number = 1000, Roman = "M", Mid = "C", Increment = "C" }
 
             };
-            numsDesc = nums.OrderByDescending(x => x.Number).ToList();
+            numMapsDesc = numMaps.OrderByDescending(x => x.Number).ToList();
         }
 
         public string ToRoman(int number)
@@ -32,16 +32,16 @@ namespace RomanNumerals.Models
             //TODO: validate
             var output = string.Empty;
 
-            if (nums.Where(x => x.Number == number).Count() == 1)
-                return nums.First(x => x.Number == number).Roman;
+            if (numMaps.Where(x => x.Number == number).Count() == 1)
+                return numMaps.First(x => x.Number == number).Roman;
             else
             {
                 while (number > 0)
                 {
-                    var stopLooping = false;
-                    numsDesc.ForEach(mapDesc =>
+                    var mapFound = false;
+                    numMapsDesc.ForEach(mapDesc =>
                     {
-                        if (!stopLooping)
+                        if (!mapFound)
                         {
                             var dividend = number;
                             var divisor = mapDesc.Number;
@@ -52,20 +52,19 @@ namespace RomanNumerals.Models
                                 if (quotient > 0)
                                 {
                                     number = quotient * mapDesc.Number;
-                                    if (nums.Where(x => x.Number == number).Count() == 1)
+                                    if (numMaps.Where(x => x.Number == number).Count() == 1)
                                     {
-                                        output += nums.First(x => x.Number == number).Roman;
-                                        stopLooping = true;
+                                        output += numMaps.First(x => x.Number == number).Roman;
+                                        mapFound = true;
                                     }
                                     else
                                     {
-                                        nums.ForEach(map =>
+                                        numMaps.ForEach(map =>
                                         {
-                                            if ((number < map.Number) && (!stopLooping))
+                                            if ((number < map.Number) && (!mapFound))
                                             {
-                                                var i = nums.IndexOf(map);
-                                                output += ReturnRoman(number, map.Mid, map.Increment, nums[i].Roman);
-                                                stopLooping = true;
+                                                output += ReturnRoman(number, map.Mid, map.Increment, map.Roman);
+                                                mapFound = true;
                                             }
                                         });
                                     }
@@ -83,7 +82,7 @@ namespace RomanNumerals.Models
         private string ReturnRoman(int number, string mid, string inc, string max)
         {
             var retVal = string.Empty;
-            var incNumber = (!string.IsNullOrEmpty(inc)) ? nums.First(x => x.Roman == inc).Number : 1;
+            var incNumber = numMaps.First(x => x.Roman == inc).Number;
             var div = number / incNumber;
             if (div == 4)
                 return string.Format("{0}{1}", inc, mid);
@@ -91,7 +90,7 @@ namespace RomanNumerals.Models
                 return string.Format("{0}{1}", inc, max);
             else
             {
-                var midNum = (!string.IsNullOrEmpty(mid)) ? nums.First(x => x.Roman == mid).Number : 0;
+                var midNum = numMaps.First(x => x.Roman == mid).Number;
                 if ((div > midNum) && (midNum > 0))
                 {
                     div = div - midNum;
@@ -100,6 +99,7 @@ namespace RomanNumerals.Models
                 for (var i = 1; i <= div; i++)
                     retVal += inc;
             }
+
             return retVal;
         }
     }
