@@ -9,5 +9,7 @@ namespace RomanNumerals.Models
     {
         public int Number { get; set; }
         public string Roman { get; set; }
+        public string Mid { get; set; }
+        public string Increment { get; set; }
     }
 }

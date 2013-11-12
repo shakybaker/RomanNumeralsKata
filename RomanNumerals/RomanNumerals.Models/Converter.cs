@@ -15,13 +15,13 @@ namespace RomanNumerals.Models
         {
             nums = new List<RomanNumeral>
             {
-                new RomanNumeral { Number = 1, Roman = "I" },
-                new RomanNumeral { Number = 5, Roman = "V"},
-                new RomanNumeral { Number = 10, Roman = "X"},
-                new RomanNumeral { Number = 50, Roman = "L"},
-                new RomanNumeral { Number = 100, Roman = "C"},
-                new RomanNumeral { Number = 500, Roman = "D"},
-                new RomanNumeral { Number = 1000, Roman = "M"}
+                new RomanNumeral { Number = 1, Roman = "I", Mid = "V", Increment = "I" },
+                new RomanNumeral { Number = 5, Roman = "V", Mid = "V", Increment = "I" },
+                new RomanNumeral { Number = 10, Roman = "X", Mid = "V", Increment = "I" },
+                new RomanNumeral { Number = 50, Roman = "L", Mid = "C", Increment = "X" },
+                new RomanNumeral { Number = 100, Roman = "C", Mid = "C", Increment = "X" },
+                new RomanNumeral { Number = 500, Roman = "D", Mid = "C", Increment = "C" },
+                new RomanNumeral { Number = 1000, Roman = "M", Mid = "C", Increment = "C" }
 
             };
             numsDesc = nums.OrderByDescending(x => x.Number).ToList();
@@ -36,16 +36,45 @@ namespace RomanNumerals.Models
                 return nums.First(x => x.Number == number).Roman;
             else
             {
-                nums.ForEach(map =>
+                while (number > 0)
                 {
-                    if ((number < map.Number) && (string.IsNullOrEmpty(output)))
+                    var stopLooping = false;
+                    numsDesc.ForEach(mapDesc =>
                     {
-                        var i = nums.IndexOf(map);
-                        output = ReturnRoman(number, (i > 0) ? nums[i - 1].Roman : "I", 
-                            (i > 1) ? nums[i - 2].Roman : nums[i].Roman, 
-                            nums[i].Roman);
-                    }
-                });
+                        if (!stopLooping)
+                        {
+                            var dividend = number;
+                            var divisor = mapDesc.Number;
+                            int remainder;
+                            if ((mapDesc.Number != 5) && (mapDesc.Number != 50) && (mapDesc.Number != 500))
+                            {
+                                var quotient = Math.DivRem(dividend, divisor, out remainder);
+                                if (quotient > 0)
+                                {
+                                    number = quotient * mapDesc.Number;
+                                    if (nums.Where(x => x.Number == number).Count() == 1)
+                                    {
+                                        output += nums.First(x => x.Number == number).Roman;
+                                        stopLooping = true;
+                                    }
+                                    else
+                                    {
+                                        nums.ForEach(map =>
+                                        {
+                                            if ((number < map.Number) && (!stopLooping))
+                                            {
+                                                var i = nums.IndexOf(map);
+                                                output += ReturnRoman(number, map.Mid, map.Increment, nums[i].Roman);
+                                                stopLooping = true;
+                                            }
+                                        });
+                                    }
+                                    number = remainder;
+                                }
+                            }
+                        }
+                    });
+                }
             }
 
             return output;
@@ -54,14 +83,16 @@ namespace RomanNumerals.Models
         private string ReturnRoman(int number, string mid, string inc, string max)
         {
             var retVal = string.Empty;
-            var incNumber = nums.First(x => x.Roman == inc).Number;
+            var incNumber = (!string.IsNullOrEmpty(inc)) ? nums.First(x => x.Roman == inc).Number : 1;
             var div = number / incNumber;
             if (div == 4)
                 return string.Format("{0}{1}", inc, mid);
+            else if (div == 9)
+                return string.Format("{0}{1}", inc, max);
             else
             {
-                var midNum = nums.First(x => x.Roman == mid).Number;
-                if (div > midNum)
+                var midNum = (!string.IsNullOrEmpty(mid)) ? nums.First(x => x.Roman == mid).Number : 0;
+                if ((div > midNum) && (midNum > 0))
                 {
                     div = div - midNum;
                     retVal += mid;

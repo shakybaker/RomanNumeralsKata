@@ -109,15 +109,40 @@ namespace RomanNumerals.Tests
 
             Assert.AreEqual("VI", actual);
         }
+        [Test]
+        public void Correct_value_for_9()
+        {
+            var converter = new Converter();
+            var actual = converter.ToRoman(9);
+
+            Assert.AreEqual("IX", actual);
+        }
 
         [Test]
         public void Correct_value_for_11()
         {
             var converter = new Converter();
-            var actual = converter.ToRoman(11);
+            var a = converter.ToRoman(11);
 
-            Assert.AreEqual("XI", actual);
+            Assert.AreEqual("XI", a);
         }
 
+        [Test]
+        public void Correct_value_for_14()
+        {
+            var converter = new Converter();
+            var a = converter.ToRoman(14);
+
+            Assert.AreEqual("XIV", a);
+        }
+
+        [Test]
+        public void Correct_value_for_19()
+        {
+            var converter = new Converter();
+            var a = converter.ToRoman(19);
+
+            Assert.AreEqual("XIX", a);
+        }
     }
 }
