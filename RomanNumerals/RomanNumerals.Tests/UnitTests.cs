@@ -153,5 +153,14 @@ namespace RomanNumerals.Tests
 
             Assert.AreEqual("XIX", a);
         }
+
+        [Test]
+        public void Correct_value_for_1969()
+        {
+            var converter = new Converter();
+            var a = converter.ToRoman(1969);
+
+            Assert.AreEqual("MCMLXIX", a);
+        }
     }
 }

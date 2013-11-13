@@ -46,7 +46,7 @@ namespace RomanNumerals.Models
                             var dividend = number;
                             var divisor = mapDesc.Number;
                             int remainder;
-                            if ((mapDesc.Number != 5) && (mapDesc.Number != 50) && (mapDesc.Number != 500))
+                            if ((mapDesc.Number != 5) && (mapDesc.Number != 500))
                             {
                                 var quotient = Math.DivRem(dividend, divisor, out remainder);
                                 if (quotient > 0)
